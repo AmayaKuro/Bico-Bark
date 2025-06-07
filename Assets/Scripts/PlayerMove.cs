@@ -12,10 +12,12 @@ public class PlayerMove : MonoBehaviour
     private Animator animator;
     private bool isGrounded;
     private Rigidbody2D rb; // Reference to the Rigidbody2D component
+    private GameManager gameManager;
     private void Awake()
     {
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
+        gameManager= FindAnyObjectByType<GameManager>(); // Find the GameManager instance in the scene
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -26,6 +28,7 @@ public class PlayerMove : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (gameManager.IsWIn() || gameManager.IsGameOver()) { return; }
         HandleMovement(); // Call the movement handling method
         HandleJump();
         UpdateAmimation(); // Update the animation state based on movement and jumping
