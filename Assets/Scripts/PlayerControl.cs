@@ -56,7 +56,7 @@ public class PlayerControl : NetworkBehaviour
     //}
 
 
-    void FixedUpdate()
+    void Update()
     {
         HandleMovement(); // Call the movement handling method
         HandleJump();
