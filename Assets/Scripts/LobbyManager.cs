@@ -11,7 +11,6 @@ public class LobbyManager : NetworkManager
 
     public override void Start()
     {
-        Debug.Log("StartGame called");
         base.Start();
     }
     public override void OnServerAddPlayer(NetworkConnectionToClient conn)
@@ -36,7 +35,6 @@ public class LobbyManager : NetworkManager
 
     public void StartGame()
     {
-        Debug.Log("StartGame called");
         //if (connectedPlayers.Count >= 4)
         //{
         Debug.Log("Starting game with " + connectedPlayers.Count + " players.");
