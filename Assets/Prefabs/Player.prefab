@@ -47,6 +47,7 @@ GameObject:
   - component: {fileID: 3945795179895749664}
   - component: {fileID: 2564749937563760980}
   - component: {fileID: 1627790227545054654}
+  - component: {fileID: -1431861738170933394}
   - component: {fileID: 2314301556592152947}
   m_Layer: 0
   m_Name: Player
@@ -306,6 +307,23 @@ MonoBehaviour:
   rotationSensitivity: 0.01
   positionPrecision: 0.01
   scalePrecision: 0.01
+--- !u!114 &-1431861738170933394
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2558846760216228395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f6f3bf89aa97405989c802ba270f815, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 1
+  syncMode: 0
+  syncInterval: 0
+  clientAuthority: 1
+  animator: {fileID: 8846641901990975135}
 --- !u!114 &2314301556592152947
 MonoBehaviour:
   m_ObjectHideFlags: 0

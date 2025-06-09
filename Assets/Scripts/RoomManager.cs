@@ -1,3 +1,4 @@
+
 using UnityEngine;
 using Mirror;
 
@@ -82,6 +83,11 @@ public class RoomManager : NetworkRoomManager
     /// <returns>A new GamePlayer object.</returns>
     public override GameObject OnRoomServerCreateGamePlayer(NetworkConnectionToClient conn, GameObject roomPlayer)
     {
+        // Remove the roomPlayer object when switching to the game scene
+        if (roomPlayer != null)
+        {
+            NetworkServer.Destroy(roomPlayer);
+        }
         return base.OnRoomServerCreateGamePlayer(conn, roomPlayer);
     }
 
@@ -106,6 +112,19 @@ public class RoomManager : NetworkRoomManager
     /// <returns>False to not allow this player to replace the room player.</returns>
     public override bool OnRoomServerSceneLoadedForPlayer(NetworkConnectionToClient conn, GameObject roomPlayer, GameObject gamePlayer)
     {
+
+        // Calculate X position based on the number of players already in the game
+        int playerIndex = NetworkServer.connections.Count - 1; // 0-based index
+        float spacing = 2.0f; // Adjust as needed for your player size
+
+        // Set the spawn position: expand in X, keep Y and Z from the start position
+        Vector3 basePosition = NetworkManager.startPositions.Count > 0
+            ? NetworkManager.startPositions[0].position
+            : Vector3.zero;
+        Vector3 spawnPosition = basePosition + new Vector3(playerIndex * spacing, 0, 0);
+
+        gamePlayer.transform.position = spawnPosition;
+
         return base.OnRoomServerSceneLoadedForPlayer(conn, roomPlayer, gamePlayer);
     }
 
