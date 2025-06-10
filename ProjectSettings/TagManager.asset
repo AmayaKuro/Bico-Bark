@@ -3,7 +3,11 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - Items
+  - Traps
+  - Coin
+  - End
   layers:
   - Default
   - TransparentFX
@@ -40,6 +44,18 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Foreground
+    uniqueID: 3268469115
+    locked: 0
+  - name: Ground
+    uniqueID: 1584826867
+    locked: 0
+  - name: Player
+    uniqueID: 3370385375
+    locked: 0
+  - name: Items
+    uniqueID: 3175624413
     locked: 0
   m_RenderingLayers:
   - Default
