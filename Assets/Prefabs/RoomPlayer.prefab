@@ -47,11 +47,11 @@ GameObject:
   - component: {fileID: 3945795179895749664}
   - component: {fileID: 2564749937563760980}
   - component: {fileID: 1627790227545054654}
-  - component: {fileID: -1431861738170933394}
+  - component: {fileID: 1292493028317885739}
   - component: {fileID: 2314301556592152947}
-  - component: {fileID: -8583858862394289443}
+  - component: {fileID: 956271177552421319}
   m_Layer: 0
-  m_Name: Player
+  m_Name: RoomPlayer
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -236,7 +236,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneId: 0
-  _assetId: 255925731
+  _assetId: 2677909775
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
@@ -258,7 +258,7 @@ MonoBehaviour:
   target: {fileID: 4861313172350877323}
   syncPosition: 1
   syncRotation: 1
-  syncScale: 0
+  syncScale: 1
   onlySyncOnChange: 1
   compressRotation: 1
   interpolatePosition: 1
@@ -308,7 +308,7 @@ MonoBehaviour:
   rotationSensitivity: 0.01
   positionPrecision: 0.01
   scalePrecision: 0.01
---- !u!114 &-1431861738170933394
+--- !u!114 &1292493028317885739
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -347,7 +347,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   groundCheck: {fileID: 1825573776090298429}
---- !u!114 &-8583858862394289443
+--- !u!114 &956271177552421319
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -356,9 +356,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 2558846760216228395}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1cb5b0aa049bb5944aaf2866ceaabe4e, type: 3}
+  m_Script: {fileID: 11500000, guid: e6d9134d59ff0a345bbd570092d0d14b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
+  syncDirection: 1
   syncMode: 0
   syncInterval: 0
+  showRoomGUI: 1
+  readyToBegin: 0
+  index: 0

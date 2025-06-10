@@ -1,7 +1,8 @@
 using UnityEditor.Build.Content;
 using UnityEngine;
+using Mirror;
 
-public class PlayerCollision : MonoBehaviour
+public class PlayerCollision : NetworkBehaviour
 {
     private GameManager gameManager;
     private void Awake()
