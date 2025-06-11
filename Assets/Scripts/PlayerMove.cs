@@ -43,11 +43,12 @@ public class PlayerMove : MonoBehaviour
     }
     private void HandleJump()
     {
+        isGrounded = Physics2D.OverlapCircle(groundCheck.position, 0.1f, groundLayer); // Check if the player is grounded
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jump); // Apply upward force for jump
         }
-        isGrounded = Physics2D.OverlapCircle(groundCheck.position, 0.1f, groundLayer); // Check if the player is grounded
+        
         
     }
     private void UpdateAmimation()
