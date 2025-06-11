@@ -1748,15 +1748,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1716651412827476516, guid: 0b5f873f7d86a08498f42f766c677850, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -6.61
+      value: -1.52
       objectReference: {fileID: 0}
     - target: {fileID: 1716651412827476516, guid: 0b5f873f7d86a08498f42f766c677850, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.91
+      value: -0.1
       objectReference: {fileID: 0}
     - target: {fileID: 1716651412827476516, guid: 0b5f873f7d86a08498f42f766c677850, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -10
       objectReference: {fileID: 0}
     - target: {fileID: 1716651412827476516, guid: 0b5f873f7d86a08498f42f766c677850, type: 3}
       propertyPath: m_LocalRotation.w
@@ -2470,7 +2470,7 @@ GameObject:
   - component: {fileID: 1543794204}
   - component: {fileID: 1543794203}
   - component: {fileID: 1543794205}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: On (16x32)_2
   m_TagString: Items
   m_Icon: {fileID: 0}
@@ -2541,8 +2541,8 @@ Transform:
   m_GameObject: {fileID: 1543794202}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.67, y: -0.88, z: 0}
-  m_LocalScale: {x: 5, y: 5, z: 5}
+  m_LocalPosition: {x: 0.37, y: -3.06, z: 0}
+  m_LocalScale: {x: 3, y: 3, z: 3}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -2577,7 +2577,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0

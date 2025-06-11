@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1825573776090298429}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: groundCheck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 1998426431584081896}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.175, z: 0}
+  m_LocalPosition: {x: 0, y: -0.206, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -50,7 +50,7 @@ GameObject:
   - component: {fileID: -1431861738170933394}
   - component: {fileID: 2314301556592152947}
   - component: {fileID: -8583858862394289443}
-  m_Layer: 6
+  m_Layer: 7
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -66,11 +66,12 @@ Transform:
   m_GameObject: {fileID: 2558846760216228395}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0.002670419, z: 0, w: 0.9999965}
-  m_LocalPosition: {x: -4.17, y: 2.31, z: 0}
+  m_LocalPosition: {x: -4.29, y: 2.14, z: 0}
   m_LocalScale: {x: 5, y: 5, z: 5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1825573776090298429}
+  - {fileID: 448895389415408833}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: -0.306, z: 0}
 --- !u!212 &6781757125596204142
@@ -342,11 +343,15 @@ MonoBehaviour:
   syncInterval: 0
   playerName: 
   speed: 5
-  jump: 5
+  jump: 7.5
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
   groundCheck: {fileID: 1825573776090298429}
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  playerCheck: {fileID: 448895389415408833}
 --- !u!114 &-8583858862394289443
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -362,3 +367,34 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+--- !u!1 &2884483224213951465
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 448895389415408833}
+  m_Layer: 7
+  m_Name: playerCheck
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &448895389415408833
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2884483224213951465}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.001, y: 0.139, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4861313172350877323}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
