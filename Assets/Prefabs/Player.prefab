@@ -50,6 +50,7 @@ GameObject:
   - component: {fileID: -1431861738170933394}
   - component: {fileID: 2314301556592152947}
   - component: {fileID: -8583858862394289443}
+  - component: {fileID: -7253688071200190363}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -293,7 +294,7 @@ MonoBehaviour:
   target: {fileID: 4861313172350877323}
   syncPosition: 1
   syncRotation: 1
-  syncScale: 0
+  syncScale: 1
   onlySyncOnChange: 1
   compressRotation: 1
   interpolatePosition: 1
@@ -342,16 +343,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   playerName: 
-  speed: 5
-  jump: 7.5
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 64
-  groundCheck: {fileID: 1825573776090298429}
-  playerLayer:
-    serializedVersion: 2
-    m_Bits: 128
-  playerCheck: {fileID: 448895389415408833}
+  isFinished: 0
 --- !u!114 &-8583858862394289443
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -367,6 +359,28 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+--- !u!114 &-7253688071200190363
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2558846760216228395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 529c456e80f8ce84c9b717bfbd6f097f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 5
+  jump: 5
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  groundCheck: {fileID: 1825573776090298429}
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  playerCheck: {fileID: 448895389415408833}
 --- !u!1 &2884483224213951465
 GameObject:
   m_ObjectHideFlags: 0

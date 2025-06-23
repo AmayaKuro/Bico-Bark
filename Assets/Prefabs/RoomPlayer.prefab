@@ -44,6 +44,7 @@ GameObject:
   - component: {fileID: 6734343460586376817}
   - component: {fileID: 3474006968602582330}
   - component: {fileID: 8846641901990975135}
+  - component: {fileID: -5917278328285946045}
   - component: {fileID: 3945795179895749664}
   - component: {fileID: 2564749937563760980}
   - component: {fileID: 1627790227545054654}
@@ -224,6 +225,28 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &-5917278328285946045
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2558846760216228395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 529c456e80f8ce84c9b717bfbd6f097f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 5
+  jump: 5
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  groundCheck: {fileID: 1825573776090298429}
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  playerCheck: {fileID: 5542172926901622871}
 --- !u!114 &3945795179895749664
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -293,7 +316,7 @@ MonoBehaviour:
   target: {fileID: 4861313172350877323}
   syncPosition: 1
   syncRotation: 1
-  syncScale: 0
+  syncScale: 1
   onlySyncOnChange: 1
   compressRotation: 1
   interpolatePosition: 1
@@ -342,16 +365,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   playerName: 
-  speed: 5
-  jump: 7.5
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 64
-  groundCheck: {fileID: 1825573776090298429}
-  playerLayer:
-    serializedVersion: 2
-    m_Bits: 128
-  playerCheck: {fileID: 5542172926901622871}
+  isFinished: 0
 --- !u!114 &956271177552421319
 MonoBehaviour:
   m_ObjectHideFlags: 0
