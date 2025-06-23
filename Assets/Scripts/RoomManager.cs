@@ -1,6 +1,8 @@
-
-using UnityEngine;
 using Mirror;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /*
 	Documentation: https://mirror-networking.gitbook.io/docs/components/network-room-manager
@@ -19,6 +21,20 @@ using Mirror;
 /// </summary>
 public class RoomManager : NetworkRoomManager
 {
+    public List<GameObject> players = new List<GameObject>();
+
+    // Add this field to track finished players
+    private HashSet<uint> finishedPlayers = new HashSet<uint>();
+
+    // This is set true after server loads all subscene instances
+    bool subscenesLoaded;
+
+    [Header("MultiScene Setup")]
+    public int instances = 3;
+    [Scene, Tooltip("Add additive scenes here.\nFirst entry will be players' start scene")]
+    public List<string> subGameScenes = new List<string>();
+    public int currentLevelIndex = 0;
+
     // Overrides the base singleton so we don't
     // have to cast to this type everywhere.
     public static new RoomManager singleton => (RoomManager)NetworkRoomManager.singleton;
@@ -28,8 +44,30 @@ public class RoomManager : NetworkRoomManager
     /// <summary>
     /// This is called on the server when the server is started - including when a host is started.
     /// </summary>
-    public override void OnRoomStartServer() { }
+    //public override void OnRoomStartServer()
+    //{
+    //    StartCoroutine(ServerLoadSubScenes());
+    //}
 
+    //IEnumerator ServerLoadSubScenes()
+    //{
+    //    for (int index = 1; index <= instances; index++)
+    //    {
+    //        var gameScene = "Game " + index;
+    //        yield return SceneManager.LoadSceneAsync(gameScene, new LoadSceneParameters { loadSceneMode = LoadSceneMode.Additive, localPhysicsMode = LocalPhysicsMode.Physics3D });
+
+    //        Scene newScene = SceneManager.GetSceneAt(index);
+    //        subScenes.Add(newScene);
+    //    }
+
+    //    //Spawner.InitializePool(rewardPrefab, poolSize);
+
+    //    foreach (Scene scene in subScenes)
+    //        if (scene.IsValid())
+    //            //Spawner.InitialSpawn(scene);
+
+    //    subscenesLoaded = true;
+    //}
     /// <summary>
     /// This is called on the server when the server is stopped - including when a host is stopped.
     /// </summary>
@@ -61,7 +99,34 @@ public class RoomManager : NetworkRoomManager
     /// This is called on the server when a networked scene finishes loading.
     /// </summary>
     /// <param name="sceneName">Name of the new scene.</param>
-    public override void OnRoomServerSceneChanged(string sceneName) { }
+    public override void OnRoomServerSceneChanged(string sceneName)
+    {
+        base.OnRoomServerSceneChanged(sceneName);
+
+        // Only subscribe in game scenes, not in the room scene
+        if (subGameScenes.Contains(sceneName))
+        {
+            // Register the handler for PlayerFinishLevelMessage
+            NetworkServer.RegisterHandler<PlayerFinishLevelMessage>(OnPlayerFinishLevelMessageReceived, false);
+            Debug.Log("Subscribed to PlayerFinishLevelMessage in scene: " + sceneName);
+        }
+    }
+
+    private IEnumerator WaitForSceneLoad(string sceneName)
+    {
+        // Wait for the scene to load
+        yield return new WaitForSeconds(5);
+        // Ensure all clients are ready before changing the scene
+        foreach (var conn in Mirror.NetworkServer.connections.Values)
+        {
+            if (conn != null && !conn.isReady)
+            {
+                Mirror.NetworkServer.SetClientReady(conn);
+            }
+        }
+        // After the scene is loaded and clients are ready, change the scene
+        ServerChangeScene("Game " + Random.Range(1, 4));
+    }
 
     /// <summary>
     /// This allows customization of the creation of the room-player object on the server.
@@ -88,6 +153,7 @@ public class RoomManager : NetworkRoomManager
         {
             NetworkServer.Destroy(roomPlayer);
         }
+
         return base.OnRoomServerCreateGamePlayer(conn, roomPlayer);
     }
 
@@ -114,16 +180,15 @@ public class RoomManager : NetworkRoomManager
     {
 
         // Calculate X position based on the number of players already in the game
-        int playerIndex = NetworkServer.connections.Count - 1; // 0-based index
-        float spacing = 2.0f; // Adjust as needed for your player size
+        //int playerIndex = NetworkServer.connections.Count - 1; // 0-based index
+        //float spacing = 2.0f; // Adjust as needed for your player size
 
-        // Set the spawn position: expand in X, keep Y and Z from the start position
-        Vector3 basePosition = NetworkManager.startPositions.Count > 0
-            ? NetworkManager.startPositions[0].position
-            : Vector3.zero;
-        Vector3 spawnPosition = basePosition + new Vector3(playerIndex * spacing, 0, 0);
-
-        gamePlayer.transform.position = spawnPosition;
+        //// Set the spawn position: expand in X, keep Y and Z from the start position
+        //Vector3 basePosition = NetworkManager.startPositions.Count > 0    
+        //    ? NetworkManager.startPositions[0].position
+        //    : Vector3.zero;
+        //Vector3 spawnPosition = basePosition + new Vector3(playerIndex * spacing, 0, 0);
+        DontDestroyOnLoad(gamePlayer); // Ensure the game player persists across scene 
 
         return base.OnRoomServerSceneLoadedForPlayer(conn, roomPlayer, gamePlayer);
     }
@@ -142,7 +207,19 @@ public class RoomManager : NetworkRoomManager
     /// </summary>
     public override void OnRoomServerPlayersReady()
     {
-        base.OnRoomServerPlayersReady();
+        // Choose a sub-game scene to load. For example, pick one at random:
+        if (subGameScenes != null && subGameScenes.Count > 0)
+        {
+            string selectedScene = subGameScenes[currentLevelIndex];
+            ServerChangeScene(selectedScene);
+
+            Debug.Log($"Loading sub-game scene: {selectedScene}");
+        }
+        else
+        {
+            // Fallback to default behavior if no sub-game scenes are set
+            base.OnRoomServerPlayersReady();
+        }
     }
 
     /// <summary>
@@ -150,6 +227,37 @@ public class RoomManager : NetworkRoomManager
     /// <para>May be called multiple times while not ready players are joining</para>
     /// </summary>
     public override void OnRoomServerPlayersNotReady() { }
+
+    public override void OnServerAddPlayer(NetworkConnectionToClient conn)
+    {
+        // Only add players in the room scene
+        if (Utils.IsSceneActive(RoomScene))
+        {
+            allPlayersReady = false;
+
+            GameObject newRoomGameObject = OnRoomServerCreateRoomPlayer(conn);
+            if (newRoomGameObject == null)
+                newRoomGameObject = Instantiate(roomPlayerPrefab.gameObject, Vector3.zero, Quaternion.identity);
+
+            NetworkServer.AddPlayerForConnection(conn, newRoomGameObject);
+        }
+        if (subGameScenes.Contains(SceneManager.GetActiveScene().path))
+        {
+            allPlayersReady = false;
+
+            var currentPlayerObject = conn.identity.gameObject;
+            currentPlayerObject.transform.position = Vector3.zero; // Reset position if needed
+
+            NetworkServer.AddPlayerForConnection(conn, currentPlayerObject);
+        }
+        else
+        {
+            // Do NOT disconnect the player if not in the room scene.
+            // Optionally, you can log or handle late join attempts here.
+            Debug.Log($"OnServerAddPlayer called outside RoomScene for {conn}, ignoring.");
+            // Do nothing, don't disconnect.
+        }
+    }
 
     #endregion
 
@@ -188,7 +296,16 @@ public class RoomManager : NetworkRoomManager
     /// <summary>
     /// This is called on the client when the client is finished loading a new networked scene.
     /// </summary>
-    public override void OnRoomClientSceneChanged() { }
+    public override void OnRoomClientSceneChanged()
+    {
+        base.OnRoomClientSceneChanged();
+
+        // Ensure the client is marked as ready after a scene change
+        if (!NetworkClient.ready)
+        {
+            NetworkClient.Ready();
+        }
+    }
 
     #endregion
 
@@ -197,6 +314,56 @@ public class RoomManager : NetworkRoomManager
     public override void OnGUI()
     {
         base.OnGUI();
+    }
+
+    #endregion
+
+    #region Server Listeners
+
+    private void OnPlayerFinishLevelMessageReceived(NetworkConnectionToClient conn, PlayerFinishLevelMessage msg)
+    {
+        string currentScene = SceneManager.GetActiveScene().path;
+        Debug.Log($"Received PlayerFinishLevelMessage from {conn.identity} in scene {currentScene}");
+        foreach (var subScene in subGameScenes)
+        {
+            Debug.Log($"Sub-game scene: {subScene}");
+        }
+        if (!subGameScenes.Contains(currentScene))
+            return;
+
+        // Track by NetworkIdentity netId for uniqueness
+        uint netId = conn.identity != null ? conn.identity.netId : 0;
+        Debug.Log($"Player {conn.identity} with netId {netId} finished the level in scene {currentScene}");
+        if (netId == 0)
+            return;
+
+        finishedPlayers.Add(netId);
+
+        Debug.Log($"Player {conn.identity} finished the level in scene {currentScene} ({finishedPlayers.Count}/{NetworkServer.connections.Count})");
+
+        // Check if all players have finished
+        int activePlayers = 0;
+        foreach (var c in NetworkServer.connections.Values)
+            if (c != null && c.identity != null)
+                activePlayers++;
+
+        if (finishedPlayers.Count >= activePlayers)
+        {
+            // Advance to next level if available
+            currentLevelIndex++;
+            if (currentLevelIndex < subGameScenes.Count)
+            {
+                string nextScene = subGameScenes[currentLevelIndex];
+                Debug.Log($"All players finished. Loading next level: {nextScene}");
+                finishedPlayers.Clear();
+                ServerChangeScene(nextScene);
+            }
+            else
+            {
+                Debug.Log("All levels complete!");
+                // Optionally, return to lobby or end game here
+            }
+        }
     }
 
     #endregion

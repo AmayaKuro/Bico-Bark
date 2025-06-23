@@ -316,7 +316,7 @@ MonoBehaviour:
   target: {fileID: 4861313172350877323}
   syncPosition: 1
   syncRotation: 1
-  syncScale: 0
+  syncScale: 1
   onlySyncOnChange: 1
   compressRotation: 1
   interpolatePosition: 1
@@ -365,6 +365,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   playerName: 
+  isFinished: 0
 --- !u!114 &956271177552421319
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,4 +1,5 @@
 using Mirror;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -6,7 +7,8 @@ public class PlayerControl : NetworkBehaviour
 {
     [SyncVar]
     public string playerName;
-
+    [SyncVar]
+    public bool isFinished = false;
     void Start()
     {
         // Disable movement if not local player
@@ -26,44 +28,34 @@ public class PlayerControl : NetworkBehaviour
         if (isLocalPlayer)
         {
             CmdSetName("Player " + Random.Range(1000, 9999));
+            SceneManager.sceneLoaded += OnSceneLoaded;
         }
     }
 
-    //[Client]
-    //public void StartGame()
-    //{
-    //    CmdRequestSceneChange("Scenes/Game");
-    //}
-
-    //[Command]
-    //private void CmdRequestSceneChange(string sceneName)
-    //{
-    //    Debug.Log($"Requesting scene change to {sceneName} from {playerName}");
-    //    if (isServer)
-    //    {
-    //        if (NetworkManager.singleton == null)
-    //        {
-    //            Debug.LogError("NetworkManager.singleton is null!");
-    //            return;
-    //        }
-
-    //        NetworkManager.singleton.ServerChangeScene(sceneName);
-    //    }
-    //}
-
-
     void Update()
     {
-        ResetGame(); // Change scene to "Game" when the player is ready
+        InputCheck(); // Change scene to "Game" when the player is ready
     }
 
-    private void ResetGame()
+    private void InputCheck()
     {
         if (Input.GetKeyDown(KeyCode.R))
         {
             // Change scene to "Game"
-            ChangeScene(SceneManager.GetActiveScene().name);
+            ResetGameRequest();
         }
+
+        if (Input.GetKeyDown(KeyCode.F) && isLocalPlayer && !isFinished)
+        {
+            EnterFinishLine();
+        }
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // Only reset if this is the local player
+        if (isLocalPlayer)
+            this.transform.position = Vector3.zero;
     }
 
     [Command]
@@ -72,9 +64,17 @@ public class PlayerControl : NetworkBehaviour
         playerName = name;
     }
 
-    [Command(requiresAuthority = false)]
-    public void ChangeScene(string scene)
+    [Client]
+    void ResetGameRequest()
     {
-        SceneManager.LoadScene(scene, LoadSceneMode.Single);
+
+    }
+
+    [Client]
+    void EnterFinishLine()
+    {
+        //DontDestroyOnLoad(this); // Ensure this object persists across scene changes
+
+        connectionToServer.Send(new PlayerFinishLevelMessage { player = this.GameObject() });
     }
 }

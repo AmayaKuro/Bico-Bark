@@ -294,7 +294,7 @@ MonoBehaviour:
   target: {fileID: 4861313172350877323}
   syncPosition: 1
   syncRotation: 1
-  syncScale: 0
+  syncScale: 1
   onlySyncOnChange: 1
   compressRotation: 1
   interpolatePosition: 1
@@ -343,16 +343,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   playerName: 
-  speed: 5
-  jump: 7.5
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 64
-  groundCheck: {fileID: 1825573776090298429}
-  playerLayer:
-    serializedVersion: 2
-    m_Bits: 128
-  playerCheck: {fileID: 448895389415408833}
+  isFinished: 0
 --- !u!114 &-8583858862394289443
 MonoBehaviour:
   m_ObjectHideFlags: 0
