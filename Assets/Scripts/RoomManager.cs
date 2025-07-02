@@ -52,8 +52,13 @@ public class RoomManager : NetworkRoomManager
         // Only subscribe in game scenes, not in the room scene
         if (subGameScenes.Contains(sceneName))
         {
+            var startPosition = GameObject.Find("Start").GetComponent<Transform>();
+            RegisterStartPosition(startPosition);
+
             // Register the handler for PlayerFinishLevelMessage
             NetworkServer.RegisterHandler<PlayerFinishLevelMessage>(OnPlayerFinishLevelMessageReceived, false);
+
+
             Debug.Log("Subscribed to PlayerFinishLevelMessage in scene: " + sceneName);
         }
     }
@@ -147,7 +152,12 @@ public class RoomManager : NetworkRoomManager
 
             GameObject newRoomGameObject = OnRoomServerCreateRoomPlayer(conn);
             if (newRoomGameObject == null)
-                newRoomGameObject = Instantiate(roomPlayerPrefab.gameObject, Vector3.zero, Quaternion.identity);
+            {
+                Transform startPos = GetStartPosition();
+                newRoomGameObject = startPos != null
+                    ? Instantiate(playerPrefab, startPos.position, startPos.rotation)
+                    : Instantiate(playerPrefab);
+            }
 
             NetworkServer.AddPlayerForConnection(conn, newRoomGameObject);
         }
@@ -155,7 +165,10 @@ public class RoomManager : NetworkRoomManager
         {
             allPlayersReady = false;
 
-            var currentPlayerObject = Instantiate(roomPlayerPrefab.gameObject, Vector3.zero, Quaternion.identity);
+            Transform startPos = GetStartPosition();
+            var currentPlayerObject = startPos != null
+                ? Instantiate(playerPrefab, startPos.position, startPos.rotation)
+                : Instantiate(playerPrefab); Instantiate(roomPlayerPrefab.gameObject, Vector3.zero, Quaternion.identity);
 
             NetworkServer.ReplacePlayerForConnection(conn, currentPlayerObject, ReplacePlayerOptions.KeepAuthority);
         }
