@@ -28,7 +28,7 @@ public class PlayerControl : NetworkBehaviour
         if (isLocalPlayer)
         {
             CmdSetName("Player " + Random.Range(1000, 9999));
-            SceneManager.sceneLoaded += OnSceneLoaded;
+            //SceneManager.sceneLoaded += OnSceneLoaded;
         }
     }
 
@@ -51,12 +51,12 @@ public class PlayerControl : NetworkBehaviour
         }
     }
 
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        // Only reset if this is the local player
-        if (isLocalPlayer)
-            this.transform.position = Vector3.zero;
-    }
+    //private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    //{
+    //    // Only reset if this is the local player
+    //    if (isLocalPlayer)
+    //        this.transform.position = Vector3.zero;
+    //}
 
     [Command]
     void CmdSetName(string name)

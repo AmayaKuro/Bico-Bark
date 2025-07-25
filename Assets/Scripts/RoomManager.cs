@@ -22,13 +22,15 @@ using UnityEngine.SceneManagement;
 public class RoomManager : NetworkRoomManager
 {
     public List<GameObject> players = new List<GameObject>();
-
     // Add this field to track finished players
     private HashSet<uint> finishedPlayers = new HashSet<uint>();
 
+    [Tooltip("Reference to FadeInOut script on child FadeCanvas")]
+    public FadeInOut fadeInOut;
     // This is set true after server loads all subscene instances
     bool subscenesLoaded;
-    public  List<string> gamescenelist = new List<string>();
+    bool isInTransition;
+
     [Header("MultiScene Setup")]
     public int instances = 3;
     [Scene, Tooltip("Add additive scenes here.\nFirst entry will be players' start scene")]
@@ -47,13 +49,16 @@ public class RoomManager : NetworkRoomManager
     /// <param name="sceneName">Name of the new scene.</param>
     public override void OnRoomServerSceneChanged(string sceneName)
     {
-        base.OnRoomServerSceneChanged(sceneName);
+        //base.OnRoomServerSceneChanged(sceneName);
 
         // Only subscribe in game scenes, not in the room scene
         if (subGameScenes.Contains(sceneName))
         {
-            var startPosition = GameObject.Find("Start").GetComponent<Transform>();
-            RegisterStartPosition(startPosition);
+            var startPosition = GameObject.Find("Start")?.GetComponent<Transform>();
+            if (startPosition != null)
+            {
+                RegisterStartPosition(startPosition);
+            }
 
             // Register the handler for PlayerFinishLevelMessage
             NetworkServer.RegisterHandler<PlayerFinishLevelMessage>(OnPlayerFinishLevelMessageReceived, false);
@@ -61,22 +66,6 @@ public class RoomManager : NetworkRoomManager
 
             Debug.Log("Subscribed to PlayerFinishLevelMessage in scene: " + sceneName);
         }
-    }
-
-    private IEnumerator WaitForSceneLoad(string sceneName)
-    {
-        // Wait for the scene to load
-        yield return new WaitForSeconds(5);
-        // Ensure all clients are ready before changing the scene
-        foreach (var conn in Mirror.NetworkServer.connections.Values)
-        {
-            if (conn != null && !conn.isReady)
-            {
-                Mirror.NetworkServer.SetClientReady(conn);
-            }
-        }
-        // After the scene is loaded and clients are ready, change the scene
-        ServerChangeScene("Game " + Random.Range(1, 4));
     }
 
     /// <summary>
@@ -98,37 +87,11 @@ public class RoomManager : NetworkRoomManager
     }
 
     /// <summary>
-    /// This is called on the server when it is told that a client has finished switching from the room scene to a game player scene.
-    /// <para>When switching from the room, the room-player is replaced with a game-player object. This callback function gives an opportunity to apply state from the room-player to the game-player object.</para>
-    /// </summary>
-    /// <param name="conn">The connection of the player</param>
-    /// <param name="roomPlayer">The room player object.</param>
-    /// <param name="gamePlayer">The game player object.</param>
-    /// <returns>False to not allow this player to replace the room player.</returns>
-    public override bool OnRoomServerSceneLoadedForPlayer(NetworkConnectionToClient conn, GameObject roomPlayer, GameObject gamePlayer)
-    {
-
-        // Calculate X position based on the number of players already in the game
-        //int playerIndex = NetworkServer.connections.Count - 1; // 0-based index
-        //float spacing = 2.0f; // Adjust as needed for your player size
-
-        //// Set the spawn position: expand in X, keep Y and Z from the start position
-        //Vector3 basePosition = NetworkManager.startPositions.Count > 0    
-        //    ? NetworkManager.startPositions[0].position
-        //    : Vector3.zero;
-        //Vector3 spawnPosition = basePosition + new Vector3(playerIndex * spacing, 0, 0);
-        DontDestroyOnLoad(gamePlayer); // Ensure the game player persists across scene 
-
-        return base.OnRoomServerSceneLoadedForPlayer(conn, roomPlayer, gamePlayer);
-    }
-
-    /// <summary>
     /// This is called on the server when all the players in the room are ready.
     /// <para>The default implementation of this function uses ServerChangeScene() to switch to the game player scene. By implementing this callback you can customize what happens when all the players in the room are ready, such as adding a countdown or a confirmation for a group leader.</para>
     /// </summary>
     public override void OnRoomServerPlayersReady()
-    {
-        // Choose a sub-game scene to load. For example, pick one at random:
+    {   
         if (subGameScenes != null && subGameScenes.Count > 0)
         {
             string selectedScene = subGameScenes[currentLevelIndex];
@@ -136,31 +99,10 @@ public class RoomManager : NetworkRoomManager
 
             Debug.Log($"Loading sub-game scene: {selectedScene}");
         }
-        else
-        {
-            // Fallback to default behavior if no sub-game scenes are set
-            base.OnRoomServerPlayersReady();
-        }
     }
 
     public override void OnServerAddPlayer(NetworkConnectionToClient conn)
     {
-        // Only add players in the room scene
-        if (Utils.IsSceneActive(RoomScene))
-        {
-            allPlayersReady = false;
-
-            GameObject newRoomGameObject = OnRoomServerCreateRoomPlayer(conn);
-            if (newRoomGameObject == null)
-            {
-                Transform startPos = GetStartPosition();
-                newRoomGameObject = startPos != null
-                    ? Instantiate(playerPrefab, startPos.position, startPos.rotation)
-                    : Instantiate(playerPrefab);
-            }
-
-            NetworkServer.AddPlayerForConnection(conn, newRoomGameObject);
-        }
         if (subGameScenes.Contains(SceneManager.GetActiveScene().path))
         {
             allPlayersReady = false;
@@ -168,16 +110,13 @@ public class RoomManager : NetworkRoomManager
             Transform startPos = GetStartPosition();
             var currentPlayerObject = startPos != null
                 ? Instantiate(playerPrefab, startPos.position, startPos.rotation)
-                : Instantiate(playerPrefab); Instantiate(roomPlayerPrefab.gameObject, Vector3.zero, Quaternion.identity);
+                : Instantiate(playerPrefab);
 
             NetworkServer.ReplacePlayerForConnection(conn, currentPlayerObject, ReplacePlayerOptions.KeepAuthority);
         }
         else
         {
-            // Do NOT disconnect the player if not in the room scene.
-            // Optionally, you can log or handle late join attempts here.
-            Debug.Log($"OnServerAddPlayer called outside RoomScene for {conn}, ignoring.");
-            // Do nothing, don't disconnect.
+            base.OnServerAddPlayer(conn);
         }
     }
 
@@ -199,6 +138,54 @@ public class RoomManager : NetworkRoomManager
     //    }
     //}
 
+
+    /// <summary>
+    /// 
+    /// </summary
+    public override void OnClientChangeScene(string sceneName, SceneOperation sceneOperation, bool customHandling)
+    {
+        if (subGameScenes.Contains(sceneName))
+        {
+            StartCoroutine(FadeLoadScene(sceneName));
+        }
+        else
+        {
+            base.OnClientChangeScene(sceneName, sceneOperation, customHandling);
+        }
+    }
+
+    IEnumerator FadeLoadScene(string sceneName)
+    {
+        isInTransition = true;
+
+        // This will return immediately if already faded in
+        // e.g. by UnloadAdditive or by default startup state
+        yield return fadeInOut.FadeIn();
+
+        // Start loading the additive subscene
+        loadingSceneAsync = SceneManager.LoadSceneAsync(sceneName);
+
+        while (loadingSceneAsync != null && !loadingSceneAsync.isDone)
+            yield return null;
+
+        // Reset these to false when ready to proceed
+        NetworkClient.isLoadingScene = false;
+        isInTransition = false;
+
+        OnClientSceneChanged();
+
+        // Reveal the new scene content.
+        yield return fadeInOut.FadeOut();
+    }
+
+    public override void OnClientSceneChanged()
+    {
+        // Only call the base method if not in a transition.
+        // This will be called from LoadAdditive / UnloadAdditive after setting isInTransition to false
+        // but will also be called first by Mirror when the scene loading finishes.
+        if (!isInTransition)
+            base.OnClientSceneChanged();
+    }
     #endregion
 
     #region Optional UI
@@ -216,10 +203,7 @@ public class RoomManager : NetworkRoomManager
     {
         string currentScene = SceneManager.GetActiveScene().path;
         Debug.Log($"Received PlayerFinishLevelMessage from {conn.identity} in scene {currentScene}");
-        foreach (var subScene in subGameScenes)
-        {
-            Debug.Log($"Sub-game scene: {subScene}");
-        }
+
         if (!subGameScenes.Contains(currentScene))
             return;
 
@@ -246,13 +230,31 @@ public class RoomManager : NetworkRoomManager
             {
                 string nextScene = subGameScenes[currentLevelIndex];
                 Debug.Log($"All players finished. Loading next level: {nextScene}");
+                SendClientNewSceneMessage(nextScene);
+
                 finishedPlayers.Clear();
-                ServerChangeScene(nextScene);
             }
             else
             {
                 Debug.Log("All levels complete!");
                 // Optionally, return to lobby or end game here
+            }
+        }
+    }
+
+    void SendClientNewSceneMessage(string sceneName)
+    {
+        // Sends a SceneMessage to all connected clients to load the scene
+        foreach (var conn in Mirror.NetworkServer.connections.Values)
+        {
+            if (conn != null && conn.isReady)
+            {
+                conn.Send(new SceneMessage
+                {
+                    sceneName = sceneName,
+                    sceneOperation = SceneOperation.Normal,
+                    customHandling = true,
+                });
             }
         }
     }

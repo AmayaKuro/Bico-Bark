@@ -17,7 +17,7 @@ public class FirebaseMapLoader : MonoBehaviour
             {
                 dbReference = FirebaseDatabase.DefaultInstance.RootReference;
                 Debug.Log("Firebase connected.");
-                FetchMaps();
+                //FetchMaps();
             }
             else
             {
@@ -39,7 +39,7 @@ public class FirebaseMapLoader : MonoBehaviour
                     {
                         string scenePath = map.Child("scene").Value.ToString();
                         // Push to the new gameSceneList
-                        roomManager.gamescenelist.Add(scenePath);
+                        roomManager.subGameScenes.Add(scenePath);
 
                         Debug.Log($"Map added to gameSceneList: {scenePath}");
                     }
