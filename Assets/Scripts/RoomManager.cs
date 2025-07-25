@@ -28,7 +28,7 @@ public class RoomManager : NetworkRoomManager
 
     // This is set true after server loads all subscene instances
     bool subscenesLoaded;
-
+    public  List<string> gamescenelist = new List<string>();
     [Header("MultiScene Setup")]
     public int instances = 3;
     [Scene, Tooltip("Add additive scenes here.\nFirst entry will be players' start scene")]
