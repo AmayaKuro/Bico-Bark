@@ -27,8 +27,6 @@ public class RoomManager : NetworkRoomManager
 
     [Tooltip("Reference to FadeInOut script on child FadeCanvas")]
     public FadeInOut fadeInOut;
-    // This is set true after server loads all subscene instances
-    bool subscenesLoaded;
     bool isInTransition;
     
     [Header("MultiScene Setup")]
@@ -140,11 +138,11 @@ public class RoomManager : NetworkRoomManager
 
 
     /// <summary>
-    /// 
+    /// Client scene will fade if change game scene 
     /// </summary
     public override void OnClientChangeScene(string sceneName, SceneOperation sceneOperation, bool customHandling)
     {
-        if (subGameScenes.Contains(sceneName))
+        if (subGameScenes.Contains(sceneName) || sceneName == GameplayScene)
         {
             StartCoroutine(FadeLoadScene(sceneName));
         }
@@ -157,6 +155,9 @@ public class RoomManager : NetworkRoomManager
     IEnumerator FadeLoadScene(string sceneName)
     {
         isInTransition = true;
+
+        // Disable client movement during transition
+        NetworkClient.localPlayer?.GetComponent<PlayerControl>().StopPlayerMovement();
 
         // This will return immediately if already faded in
         // e.g. by UnloadAdditive or by default startup state

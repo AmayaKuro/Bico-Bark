@@ -15,11 +15,7 @@ public class PlayerControl : NetworkBehaviour
         if (!isLocalPlayer)
         {
             enabled = false;
-            var playerMove = GetComponent<PlayerMove>();
-            if (playerMove != null)
-            {
-                playerMove.enabled = false;
-            }
+            StopPlayerMovement();
         }
     }
 
@@ -51,12 +47,14 @@ public class PlayerControl : NetworkBehaviour
         }
     }
 
-    //private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    //{
-    //    // Only reset if this is the local player
-    //    if (isLocalPlayer)
-    //        this.transform.position = Vector3.zero;
-    //}
+    public void StopPlayerMovement()
+    {
+        var playerMove = GetComponent<PlayerMove>();
+        if (playerMove != null)
+        {
+            playerMove.enabled = false;
+        }
+    }
 
     [Command]
     void CmdSetName(string name)
