@@ -209,9 +209,7 @@ MonoBehaviour:
   players: []
   instances: 3
   subGameScenes:
-  - Assets/Scenes/map1.unity
-  - Assets/Scenes/map2.unity
-  - Assets/Scenes/Game 3.unity
+  - Assets/Project PRU/Scene/map4.unity
   currentLevelIndex: 0
 --- !u!114 &152206927
 MonoBehaviour:

@@ -54,7 +54,7 @@ public class PlayerMove : MonoBehaviour
     private void HandleJump()
     {
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, 0.1f, groundLayer); // Check if the player is grounded
-        if (Input.GetButtonDown("Jump") && isGrounded && Time.time - lastJumpTime >= jumpCooldown)
+        if (Input.GetButtonDown("Jump") && isGrounded)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jump); // Apply upward force for jump
             lastJumpTime = Time.time; // Update last jump time

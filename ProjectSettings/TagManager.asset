@@ -8,6 +8,7 @@ TagManager:
   - Traps
   - Coin
   - End
+  - Item
   layers:
   - Default
   - TransparentFX
@@ -17,8 +18,8 @@ TagManager:
   - UI
   - Ground
   - Player
-  - 
-  - 
+  - Wall
+  - Ladder
   - 
   - 
   - 
