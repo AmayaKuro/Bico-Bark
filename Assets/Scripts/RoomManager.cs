@@ -30,7 +30,7 @@ public class RoomManager : NetworkRoomManager
     // This is set true after server loads all subscene instances
     bool subscenesLoaded;
     bool isInTransition;
-
+    
     [Header("MultiScene Setup")]
     public int instances = 3;
     [Scene, Tooltip("Add additive scenes here.\nFirst entry will be players' start scene")]

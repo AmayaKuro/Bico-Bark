@@ -1108,11 +1108,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12cf623c046a5ba4e8e976c28dfe2823, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  backGroundAudioSource: {fileID: 1415192239}
-  soundEffectAudioSource: {fileID: 962287649}
-  backgroundMusicClip: {fileID: 8300000, guid: be0872b32deaf4340b838ec4ec27fe75, type: 3}
-  jumpClip: {fileID: 0}
-  itemClip: {fileID: 0}
 --- !u!1001 &256237705
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6526,7 +6521,7 @@ GameObject:
   - component: {fileID: 1104804285}
   - component: {fileID: 1104804284}
   - component: {fileID: 1104804283}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: blockkk
   m_TagString: Untagged
   m_Icon: {fileID: 0}
