@@ -209,37 +209,53 @@ public class RoomManager : NetworkRoomManager
             return;
 
         // Track by NetworkIdentity netId for uniqueness
-        uint netId = conn.identity != null ? conn.identity.netId : 0;
-        if (netId == 0)
-            return;
+        //uint netId = conn.identity != null ? conn.identity.netId : 0;
+        //if (netId == 0)
+        //    return;
 
-        finishedPlayers.Add(netId);
+        //finishedPlayers.Add(netId);
 
         Debug.Log($"Player {conn.identity} finished the level in scene {currentScene} ({finishedPlayers.Count}/{NetworkServer.connections.Count})");
 
         // Check if all players have finished
-        int activePlayers = 0;
-        foreach (var c in NetworkServer.connections.Values)
-            if (c != null && c.identity != null)
-                activePlayers++;
+        //int activePlayers = 0;
+        //foreach (var c in NetworkServer.connections.Values)
+        //    if (c != null && c.identity != null)
+        //        activePlayers++;
 
-        if (finishedPlayers.Count >= activePlayers)
+        //if (finishedPlayers.Count >= activePlayers)
+        //{
+        //    // Advance to next level if available
+        //    currentLevelIndex++;
+        //    if (currentLevelIndex < subGameScenes.Count)
+        //    {
+        //        string nextScene = subGameScenes[currentLevelIndex];
+        //        Debug.Log($"All players finished. Loading next level: {nextScene}");
+        //        SendClientNewSceneMessage(nextScene);
+
+        //        finishedPlayers.Clear();
+        //    }
+        //    else
+        //    {
+        //        Debug.Log("All levels complete!");
+        //        // Optionally, return to lobby or end game here
+        //    }
+        //}
+
+        // Advance to next level if available
+        currentLevelIndex++;
+        if (currentLevelIndex < subGameScenes.Count)
         {
-            // Advance to next level if available
-            currentLevelIndex++;
-            if (currentLevelIndex < subGameScenes.Count)
-            {
-                string nextScene = subGameScenes[currentLevelIndex];
-                Debug.Log($"All players finished. Loading next level: {nextScene}");
-                SendClientNewSceneMessage(nextScene);
+            string nextScene = subGameScenes[currentLevelIndex];
+            Debug.Log($"All players finished. Loading next level: {nextScene}");
+            SendClientNewSceneMessage(nextScene);
 
-                finishedPlayers.Clear();
-            }
-            else
-            {
-                Debug.Log("All levels complete!");
-                // Optionally, return to lobby or end game here
-            }
+            finishedPlayers.Clear();
+        }
+        else
+        {
+            Debug.Log("All levels complete!");
+            // Optionally, return to lobby or end game here
         }
     }
 

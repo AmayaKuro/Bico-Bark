@@ -1,10 +1,12 @@
+using Mirror;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
-public class ExitDoor : MonoBehaviour
+public class ExitDoor : NetworkBehaviour
 {
     [Header("Door Settings")]
     public string doorID = "ExitDoor_01";
@@ -132,7 +134,7 @@ public class ExitDoor : MonoBehaviour
         onDoorOpened?.Invoke();
 
         // Transition
-        StartCoroutine(TransitionToNextScene());
+        connectionToServer.Send(new PlayerFinishLevelMessage { player = this.GameObject() });
     }
 
     void ShowLockedFeedback()
