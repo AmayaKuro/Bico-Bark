@@ -1,7 +1,8 @@
+using Mirror;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class GameManager : MonoBehaviour
+public class GameManager : NetworkBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public int score;
@@ -38,6 +39,8 @@ public class GameManager : MonoBehaviour
         isDead = true;
         Time.timeScale = 0;
         GameOverUI.SetActive(true);
+        connectionToServer.Send(new PlayerFailMessage { });
+            
     }
     public void GameWin()
     {

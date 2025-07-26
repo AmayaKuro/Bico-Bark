@@ -1,9 +1,12 @@
+using Mirror;
+using Mirror.Examples.Common.Controllers.Player;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
-using TMPro;
-public class SwitchMazeManager : MonoBehaviour
+using UnityEngine.SceneManagement;
+public class SwitchMazeManager : NetworkBehaviour
 {
     [Header("Maze Configuration")]
     public List<MazeSwitch> allSwitches = new List<MazeSwitch>();
@@ -90,10 +93,26 @@ public class SwitchMazeManager : MonoBehaviour
 
     void OnTimeOut()
     {
-        Debug.Log("TIME OUT! Resetting maze...");
-        ResetMaze();
-    }
+        Debug.Log("GAME OVER - Time Out!");
 
+    
+
+        if (timerText)
+        {
+            timerText.text = "GAME OVER";
+            timerText.color = Color.red;
+            timerText.fontSize = 48;
+        }
+        connectionToServer.Send(new PlayerFailMessage { });
+        enabled = false;
+
+        StartCoroutine(ReloadAfterDelay());
+    }
+    IEnumerator ReloadAfterDelay()
+    {
+        yield return new WaitForSeconds(3f);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
     public void ResetMaze()
     {
         // Reset all switches

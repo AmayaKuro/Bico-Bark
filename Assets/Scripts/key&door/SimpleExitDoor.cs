@@ -1,10 +1,12 @@
-using UnityEngine;
+using Mirror;
 using System.Collections;
 using System.Collections.Generic;
-public class SimpleExitDoor : MonoBehaviour
+using Unity.VisualScripting;
+using UnityEngine;
+public class SimpleExitDoor : NetworkBehaviour
 {
     [Header("Door Settings")]
-    public GameObject doorObject; 
+    public GameObject doorObject;
 
     [Header("Effects")]
     public GameObject appearEffect;
@@ -14,6 +16,8 @@ public class SimpleExitDoor : MonoBehaviour
     public bool useAnimation = false;
     public float animationDuration = 1f;
 
+    private bool isDoorOpen = false;
+
     void Start()
     {
         if (doorObject)
@@ -22,6 +26,7 @@ public class SimpleExitDoor : MonoBehaviour
         }
     }
 
+    // Called from KeyCollectible when key is collected
     public void OnKeyCollected()
     {
         ShowDoor();
@@ -29,8 +34,11 @@ public class SimpleExitDoor : MonoBehaviour
 
     void ShowDoor()
     {
-        if (!doorObject) return;
+        if (!doorObject || isDoorOpen) return;
 
+        isDoorOpen = true;
+
+        // Effects
         if (appearEffect)
         {
             Instantiate(appearEffect, doorObject.transform.position, Quaternion.identity);
@@ -41,6 +49,7 @@ public class SimpleExitDoor : MonoBehaviour
             AudioSource.PlayClipAtPoint(appearSound, doorObject.transform.position);
         }
 
+        // Show door
         if (useAnimation)
         {
             StartCoroutine(AnimateDoorAppear());
@@ -51,10 +60,27 @@ public class SimpleExitDoor : MonoBehaviour
         }
     }
 
+    void OnTriggerEnter2D(BoxCollider2D other)
+    {
+        // Only process if door is open
+        if (!isDoorOpen) return;
+
+        // Check if it's a player
+        if (other.CompareTag("Player"))
+        {
+            
+                // Send finish level message to server
+                connectionToServer.Send(new PlayerFinishLevelMessage { player = this.GameObject() });
+
+                // Optional: Disable further collision to prevent multiple sends
+                GetComponent<Collider2D>().enabled = false;
+            
+        }
+    }
+
     IEnumerator AnimateDoorAppear()
     {
         doorObject.SetActive(true);
-
         Vector3 originalScale = doorObject.transform.localScale;
         doorObject.transform.localScale = Vector3.zero;
 
@@ -63,8 +89,6 @@ public class SimpleExitDoor : MonoBehaviour
         {
             elapsed += Time.deltaTime;
             float t = elapsed / animationDuration;
-
-            // Easing
             t = Mathf.SmoothStep(0f, 1f, t);
 
             doorObject.transform.localScale = Vector3.Lerp(Vector3.zero, originalScale, t);
