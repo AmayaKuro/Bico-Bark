@@ -20,6 +20,7 @@ public class SimpleExitDoor : NetworkBehaviour
 
     void Start()
     {
+        NetworkServer.Spawn(gameObject);
         if (doorObject)
         {
             doorObject.SetActive(false);
@@ -60,7 +61,7 @@ public class SimpleExitDoor : NetworkBehaviour
         }
     }
 
-    void OnTriggerEnter2D(BoxCollider2D other)
+    void OnTriggerEnter2D(Collider2D other)
     {
         // Only process if door is open
         if (!isDoorOpen) return;
@@ -70,10 +71,10 @@ public class SimpleExitDoor : NetworkBehaviour
         {
             
                 // Send finish level message to server
-                connectionToServer.Send(new PlayerFinishLevelMessage { player = this.GameObject() });
+                connectionToServer.Send(new PlayerFinishLevelMessage { });
 
                 // Optional: Disable further collision to prevent multiple sends
-                GetComponent<Collider2D>().enabled = false;
+                GetComponent<BoxCollider2D>().enabled = false;
             
         }
     }
