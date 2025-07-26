@@ -30,7 +30,8 @@ public class PlayerCollision : NetworkBehaviour
             
         }else if (collision.CompareTag("Traps"))
         {
-            gameManager.GameOver();
+            NetworkIdentity playerIdentity = GetComponent<NetworkIdentity>();
+            gameManager.GameOver(playerIdentity);
             
         }
     }

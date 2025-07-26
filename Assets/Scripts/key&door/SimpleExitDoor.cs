@@ -20,7 +20,6 @@ public class SimpleExitDoor : NetworkBehaviour
 
     void Start()
     {
-        NetworkServer.Spawn(gameObject);
         if (doorObject)
         {
             doorObject.SetActive(false);
@@ -69,13 +68,17 @@ public class SimpleExitDoor : NetworkBehaviour
         // Check if it's a player
         if (other.CompareTag("Player"))
         {
-            
+            NetworkIdentity playerIdentity = other.GetComponent<NetworkIdentity>();
+
+            // Only send message if this is the local player
+            if (playerIdentity && playerIdentity.isLocalPlayer)
+            {
                 // Send finish level message to server
-                connectionToServer.Send(new PlayerFinishLevelMessage { });
+                NetworkClient.connection.Send(new PlayerFinishLevelMessage { player = other.gameObject });
 
                 // Optional: Disable further collision to prevent multiple sends
                 GetComponent<BoxCollider2D>().enabled = false;
-            
+            }
         }
     }
 

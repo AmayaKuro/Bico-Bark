@@ -34,12 +34,20 @@ public class GameManager : NetworkBehaviour
     {
        /* PointsUI.text += score.ToString();*/
     }
-    public void GameOver() 
-    {
+    public void GameOver(NetworkIdentity playerIdentity) 
+    { 
         isDead = true;
-        Time.timeScale = 0;
-        GameOverUI.SetActive(true);
-        connectionToServer.Send(new PlayerFailMessage { });
+        
+
+        // Only send message if this is the local player
+        if (playerIdentity && playerIdentity.isLocalPlayer)
+        {
+            // Send finish level message to server
+            NetworkClient.connection.Send(new PlayerFailMessage {});
+
+            // Optional: Disable further collision to prevent multiple sends
+            GetComponent<BoxCollider2D>().enabled = false;
+        }
             
     }
     public void GameWin()
