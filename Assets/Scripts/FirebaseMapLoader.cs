@@ -22,7 +22,7 @@ public class FirebaseMapLoader : MonoBehaviour
                 if (roomManager.subGameScenes == null || roomManager.subGameScenes.Count == 0)
                 {
                     Debug.Log("gameSceneList is null or empty, adding maps to database.");
-                    AddMapsToDatabase();
+                  
                 }
                 else
                 {
@@ -37,33 +37,8 @@ public class FirebaseMapLoader : MonoBehaviour
         });
     }
 
-    void AddMapsToDatabase()
-    {
-        List<string> mapScenes = new List<string> { "map1", "map2", "map3", "map4" };
-        Dictionary<string, object> maps = new Dictionary<string, object>();
-
-        for (int i = 0; i < mapScenes.Count; i++)
-        {
-            Dictionary<string, object> mapData = new Dictionary<string, object>
-            {
-                { "scene", mapScenes[i] }
-            };
-            maps[$"map{i + 1}"] = mapData;
-        }
-
-        dbReference.Child("maps").UpdateChildrenAsync(maps).ContinueWithOnMainThread(task =>
-        {
-            if (task.IsCompleted && !task.IsFaulted)
-            {
-                Debug.Log("Maps successfully added to Firebase.");
-                FetchMaps();
-            }
-            else
-            {
-                Debug.LogError("Failed to add maps to Firebase: " + task.Exception);
-            }
-        });
-    }
+    
+    
 
     void FetchMaps()
     {

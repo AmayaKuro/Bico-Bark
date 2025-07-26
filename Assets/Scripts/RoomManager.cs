@@ -33,6 +33,8 @@ public class RoomManager : NetworkRoomManager
     public int instances = 3;
     [Scene, Tooltip("Add additive scenes here.\nFirst entry will be players' start scene")]
     public List<string> subGameScenes = new List<string>();
+    [Scene]
+    public string EndScene = "EndScene"; // Default scene to load when all levels are complete
     public int currentLevelIndex = 0;
 
     // Overrides the base singleton so we don't
@@ -143,7 +145,7 @@ public class RoomManager : NetworkRoomManager
     /// </summary
     public override void OnClientChangeScene(string sceneName, SceneOperation sceneOperation, bool customHandling)
     {
-        if (subGameScenes.Contains(sceneName) || sceneName == GameplayScene)
+        if (subGameScenes.Contains(sceneName) || sceneName == GameplayScene || sceneName==EndScene)
         {
             StartCoroutine(FadeLoadScene(sceneName));
         }
@@ -256,7 +258,7 @@ public class RoomManager : NetworkRoomManager
         else
         {
             Debug.Log("All levels complete!");
-            // Optionally, return to lobby or end game here
+            SendClientNewSceneMessage(EndScene);
         }
     }
 
