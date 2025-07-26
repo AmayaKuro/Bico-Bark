@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 195545331813193987}
   - component: {fileID: 5940442476898595511}
   - component: {fileID: 5446135612197464332}
+  - component: {fileID: -3852466498138969907}
+  - component: {fileID: -3683596486082901758}
   m_Layer: 0
   m_Name: door
   m_TagString: Untagged
@@ -169,3 +171,37 @@ MonoBehaviour:
   appearSound: {fileID: 0}
   useAnimation: 0
   animationDuration: 1
+--- !u!114 &-3852466498138969907
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5045740821673500351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 2346660847
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
+--- !u!114 &-3683596486082901758
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5045740821673500351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f6f3bf89aa97405989c802ba270f815, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 1
+  syncMode: 0
+  syncInterval: 0
+  clientAuthority: 0
+  animator: {fileID: 0}

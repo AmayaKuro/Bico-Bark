@@ -42,6 +42,8 @@ public class ExitDoor : NetworkBehaviour
     [System.Obsolete]
     void Start()
     {
+        NetworkServer.Spawn(gameObject);
+
         keyManager = FindObjectOfType<KeyManager>();
 
         // Subscribe to key events
