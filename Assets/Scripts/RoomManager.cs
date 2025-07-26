@@ -28,7 +28,7 @@ public class RoomManager : NetworkRoomManager
     [Tooltip("Reference to FadeInOut script on child FadeCanvas")]
     public FadeInOut fadeInOut;
     bool isInTransition;
-    
+
     [Header("MultiScene Setup")]
     public int instances = 3;
     [Scene, Tooltip("Add additive scenes here.\nFirst entry will be players' start scene")]
@@ -60,6 +60,7 @@ public class RoomManager : NetworkRoomManager
 
             // Register the handler for PlayerFinishLevelMessage
             NetworkServer.RegisterHandler<PlayerFinishLevelMessage>(OnPlayerFinishLevelMessageReceived, false);
+            NetworkServer.RegisterHandler<PlayerFailMessage>(OnPlayerFailMessageReceived, false);
 
 
             Debug.Log("Subscribed to PlayerFinishLevelMessage in scene: " + sceneName);
@@ -89,7 +90,7 @@ public class RoomManager : NetworkRoomManager
     /// <para>The default implementation of this function uses ServerChangeScene() to switch to the game player scene. By implementing this callback you can customize what happens when all the players in the room are ready, such as adding a countdown or a confirmation for a group leader.</para>
     /// </summary>
     public override void OnRoomServerPlayersReady()
-    {   
+    {
         if (subGameScenes != null && subGameScenes.Count > 0)
         {
             string selectedScene = subGameScenes[currentLevelIndex];
@@ -257,6 +258,21 @@ public class RoomManager : NetworkRoomManager
             Debug.Log("All levels complete!");
             // Optionally, return to lobby or end game here
         }
+    }
+
+    private void OnPlayerFailMessageReceived(NetworkConnectionToClient conn, PlayerFailMessage msg)
+    {
+        string currentScene = SceneManager.GetActiveScene().path;
+        Debug.Log($"Received PlayerFinishLevelMessage from {conn.identity} in scene {currentScene}");
+
+        if (!subGameScenes.Contains(currentScene))
+            return;
+
+        // Advance to next level if available
+        Debug.Log($"Players Failed. Reset level: {currentScene}");
+        SendClientNewSceneMessage(currentScene);
+
+        finishedPlayers.Clear();
     }
 
     void SendClientNewSceneMessage(string sceneName)
